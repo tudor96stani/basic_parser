@@ -21,7 +21,7 @@ let rec parse_and_print lexbuf =
     | Some value ->
       (* printf "%a\n" Language.output_value value; *)
       parse_and_print lexbuf
-    | None -> ()
+    | None -> Printf.printf "Lexical and syntactical analysis completed succesfully\n\n"
     
 let loop filename () =
       let inx = In_channel.create filename in

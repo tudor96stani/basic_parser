@@ -80,6 +80,7 @@ let rec stringifyExpression e = match e with
       | AsgnF (objName,fldName,innerExp) -> "AsgnF(" ^ objName ^ "," ^ fldName ^ "," ^ (stringifyExpression innerExp) ^ ")"
       | Seq (e1,e2) -> "Seq(" ^ (stringifyExpression e1) ^ "," ^(stringifyExpression e2) ^ ")"
       | AddInt (e1,e2) -> "AddInt(" ^ (stringifyExpression e1) ^ "," ^ (stringifyExpression e2) ^ ")"
+      | _ -> ""
 
 let rec output_value outc ast = 
       let stringexp = stringifyExpression ast in

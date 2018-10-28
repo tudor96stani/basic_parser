@@ -1,8 +1,8 @@
 class A extends Object {
-    int b;
+    int b
     #
-    int m(int a,) 
+    int m(int a) 
     { 
-        { 5 }
+        a.b(,);
     }
-};
+}
