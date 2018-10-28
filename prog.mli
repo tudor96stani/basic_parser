@@ -1,1 +1,1 @@
-val prog:(Lexing.lexbuf -> token) -> Lexing.lexbuf -> Language.exp option
+val prog:(Lexing.lexbuf -> token) -> Lexing.lexbuf -> Language.Progr option

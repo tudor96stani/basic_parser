@@ -1,1 +1,1 @@
-runner.ml: Command Core In_channel Language Lexer Lexing Parser
+runner.ml: Command Core In_channel Lexer Lexing Parser

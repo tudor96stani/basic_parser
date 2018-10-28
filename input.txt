@@ -1,1 +1,8 @@
-5+6
+class A extends Object {
+    int b;
+    #
+    int m(int a,) 
+    { 
+        { 5 }
+    }
+};
