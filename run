@@ -1,2 +1,2 @@
-ocamlbuild -use-menhir -tag thread -use-ocamlfind -quiet -pkg core runner.native
-./runner.native $1
+ocamlbuild -use-menhir -tag thread -use-ocamlfind -quiet -pkg core rnr.native
+./rnr.native $1

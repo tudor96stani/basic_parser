@@ -25,6 +25,7 @@ type token =
   | MINUS_INT
   | MINUS_FLOAT
   | LS
+  | LET
   | LEFT_RBRACK
   | LEFT_BRACK
   | LEFT_BRACE

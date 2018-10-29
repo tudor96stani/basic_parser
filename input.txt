@@ -3,8 +3,27 @@ class A extends Object {
     #
     int m(Object a) 
     {
-	b=7*5+(21/2-(12/3));
-       	
-	a.tostring([]);
-    }
+	    b=7*5+(21/2-(12/3));;
+        5+8;;
+        cast (string) b;;
+        a.toString([]);;
+        while a 
+        { 
+            if b then { Console.WriteLine(a,); Console.WriteLine(newline,); };
+            else { b=5+1; };
+        };;
+        let (int:ls) 
+        {
+            ls = new List(a,);;
+        };;
+    };
+};
+class Main extends Object {
+    A a
+    #
+    int main(string args)
+    {
+        Console.WriteLine(a,);
+        a.m(args,);
+    };
 }

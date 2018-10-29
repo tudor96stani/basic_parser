@@ -1,4 +1,4 @@
-%token CLASS XTENDS INT_TYPE FLOAT_TYPE BOOL_TYPE VOID_TYPE IF THEN ELSE NEW WHILE INSTOF CAST TRUE FALSE NULL BOT
+%token CLASS XTENDS INT_TYPE FLOAT_TYPE BOOL_TYPE VOID_TYPE IF THEN ELSE NEW WHILE INSTOF CAST TRUE FALSE NULL BOT LET
 %token <int> INT
 %token <float> FLOAT 
 %token <string> ID
@@ -68,7 +68,7 @@ exp:
   | v=ID; INSTOF; cn=ID  { Language.InstOf (v,cn) }
   | IF; v=ID; THEN; e1=blkExp; ELSE; e2=blkExp { Language.If (v,e1,e2) }
   | ia=intArithmExp { ia }
-  | ble=blkExp { Language.Blk (ble) }
+  | LET; ble=blkExp { Language.Blk (ble) }
  (* | fa=floatArithmExp { fa } *) 
 meth_inv_params: 
         | LEFT_BRACK; RIGHT_BRACK { [] }
@@ -83,7 +83,7 @@ paramVal:
        | vname=ID; COMMA { Language.Var (vname) }
 
 blkExp: LEFT_BRACE; e=exp; RIGHT_BRACE; SEMICOL { Bnvar (e) }
-       | LEFT_RBRACK; t=typ; vname=ID; RIGHT_RBRACK; LEFT_BRACE; e=exp; RIGHT_BRACE; SEMICOL { Bvar (t,vname,e) }
+       | LEFT_RBRACK; t=typ; COLON; vname=ID; RIGHT_RBRACK; LEFT_BRACE; e=exp; RIGHT_BRACE; SEMICOL { Bvar (t,vname,e) }
 (*Arithmetic operations on int *)
 intArithmExp: t=intTerm; aex=intArithmExp1 
        {
