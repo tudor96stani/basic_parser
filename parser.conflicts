@@ -1,9 +1,9 @@
 
-** Conflict (reduce/reduce) in state 79.
+** Conflict (shift/reduce) in state 72.
 ** Token involved: RIGHT_RBRACK
 ** This state is reached from start after reading:
 
-CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE ID DOT ID LEFT_RBRACK 
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE LEFT_RBRACK ID 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
@@ -16,28 +16,30 @@ CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG meth_list RIGHT_BRACE
                                                  meth meth_list1 
                                                  typ ID LEFT_RBRACK param_list RIGHT_RBRACK blkExp 
                                                                                             LEFT_BRACE exp RIGHT_BRACE 
-                                                                                                       ID DOT ID LEFT_RBRACK meth_inv_params RIGHT_RBRACK SEMICOL // lookahead token appears
-                                                                                                                             vlist // lookahead token is inherited
-                                                                                                                             (?)
+                                                                                                       (?)
 
-** In state 79, looking ahead at RIGHT_RBRACK, reducing production
-** loption(separated_nonempty_list(COMMA,paramVal)) -> 
+** In state 72, looking ahead at RIGHT_RBRACK, shifting is permitted
+** because of the following sub-derivation:
+
+LEFT_RBRACK ID . RIGHT_RBRACK ID SEMICOL 
+
+** In state 72, looking ahead at RIGHT_RBRACK, reducing production
+** intFactor -> ID 
 ** is permitted because of the following sub-derivation:
 
-loption(separated_nonempty_list(COMMA,paramVal)) // lookahead token is inherited
-. 
+intArithmExp 
+intTerm intArithmExp1 
+intFactor intTerm1 
+LEFT_RBRACK intArithmExp RIGHT_RBRACK // lookahead token appears
+            intTerm intArithmExp1 // lookahead token is inherited because intArithmExp1 can vanish
+            intFactor intTerm1 // lookahead token is inherited because intTerm1 can vanish
+            ID . 
 
-** In state 79, looking ahead at RIGHT_RBRACK, reducing production
-** vlist -> 
-** is permitted because of the following sub-derivation:
-
-. 
-
-** Conflict (reduce/reduce) in state 38.
+** Conflict (shift/reduce) in state 63.
 ** Token involved: RIGHT_RBRACK
 ** This state is reached from start after reading:
 
-CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE NEW ID LEFT_RBRACK 
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE ID EQUALS LEFT_RBRACK ID 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
@@ -50,18 +52,22 @@ CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG meth_list RIGHT_BRACE
                                                  meth meth_list1 
                                                  typ ID LEFT_RBRACK param_list RIGHT_RBRACK blkExp 
                                                                                             LEFT_BRACE exp RIGHT_BRACE 
-                                                                                                       NEW ID LEFT_RBRACK vlist RIGHT_RBRACK SEMICOL // lookahead token appears
-                                                                                                                          (?)
+                                                                                                       ID EQUALS exp SEMICOL 
+                                                                                                                 (?)
 
-** In state 38, looking ahead at RIGHT_RBRACK, reducing production
-** loption(separated_nonempty_list(COMMA,paramVal)) -> 
+** In state 63, looking ahead at RIGHT_RBRACK, shifting is permitted
+** because of the following sub-derivation:
+
+LEFT_RBRACK ID . RIGHT_RBRACK ID SEMICOL 
+
+** In state 63, looking ahead at RIGHT_RBRACK, reducing production
+** intFactor -> ID 
 ** is permitted because of the following sub-derivation:
 
-loption(separated_nonempty_list(COMMA,paramVal)) // lookahead token is inherited
-. 
-
-** In state 38, looking ahead at RIGHT_RBRACK, reducing production
-** vlist -> 
-** is permitted because of the following sub-derivation:
-
-. 
+intArithmExp 
+intTerm intArithmExp1 
+intFactor intTerm1 
+LEFT_RBRACK intArithmExp RIGHT_RBRACK // lookahead token appears
+            intTerm intArithmExp1 // lookahead token is inherited because intArithmExp1 can vanish
+            intFactor intTerm1 // lookahead token is inherited because intTerm1 can vanish
+            ID . 

@@ -49,12 +49,12 @@ param_list1: | { [] }
 prm: t=typ; pn=ID { [Language.Fprm (t,pn)]}
 exp: 
   | NULL{ Language.Value (Language.Vnull) }
-  | vall=INT { Language.Value (Language.Int (vall))}
-  | vall=FLOAT { Language.Value (Language.Float (vall))}
+  (*| vall=INT { Printf.printf "Matched exp vall=%d\n" vall; Language.Value (Language.Int (vall))}
+  | vall=FLOAT { Language.Value (Language.Float (vall))} *)
   | TRUE { Language.Value (Language.Bool (true))}
   | FALSE { Language.Value (Language.Bool (false))}
   | VOID { Language.Value (Language.Vvoid) }
-  | vname=ID { Language.Var (vname) }
+ (* | vname=ID { Printf.printf "Matched var name %s\n" vname;Language.Var (vname) } *)
   | obj=ID; DOT; fld=ID {Language.Vfld (obj,fld) }
   | vname=ID; EQUALS; e=exp; SEMICOL  { Language.AsgnV (vname,e) }
   | obj=ID; DOT; fld=ID; EQUALS; e=exp; SEMICOL  { Language.AsgnF (obj,fld,e) }
@@ -66,22 +66,43 @@ exp:
   | WHILE; v=ID; LEFT_BRACE; e=exp; RIGHT_BRACE { Language.WhileExp (v,e) }
   | LEFT_RBRACK; cn=ID; RIGHT_RBRACK; v=ID; SEMICOL  { Language.Cast (cn,v) }
   | v=ID; INSTOF; cn=ID; SEMICOL  { Language.InstOf (v,cn) }
-
-
-
+  | IF; v=ID; THEN; e1=blkExp; ELSE; e2=blkExp { Language.If (v,e1,e2) }
+  | ia=intArithmExp { ia }
+ (* | fa=floatArithmExp { fa } *) 
 meth_inv_params: 
         | LEFT_BRACK; RIGHT_BRACK { [] }
         | vl=vlist { vl } 
-
 vlist:
   | {[]}
   |vl=vlist; v=paramVal {[v]@vl}
   (*| vl = separated_list (COMMA, paramVal) { vl } *)
-
 paramVal:
        | vall=INT; COMMA { Language.Value (Language.Int (vall)) }
        | vall=FLOAT; COMMA { Language.Value (Language.Float (vall)) } 
        | vname=ID; COMMA { Language.Var (vname) }
 
-
 blkExp: LEFT_BRACE; e=exp; RIGHT_BRACE { Bnvar (e) }
+       | LEFT_BRACE; LEFT_RBRACK; t=typ; vname=ID; RIGHT_RBRACK; e=exp; RIGHT_BRACE { Bvar (t,vname,e) }
+
+intArithmExp: t=intTerm; aex=intArithmExp1 
+       {
+               match aex with
+               | Language.Nothing -> Printf.printf "Matched with intArithmExp1 Nothing"; t
+               | Language.RightOp (op,ex) -> (match op with | "+" -> Language.AddInt (t,ex) | "-" -> Language.DiffInt (t,ex) )
+              
+       }
+intArithmExp1: | { Language.Nothing }
+               | PLUS_INT; e=intArithmExp { Language.RightOp ("+",e) } 
+intTerm: f=intFactor; it1=intTerm1 
+        {
+                match it1 with
+                | Language.Nothing -> Printf.printf "Matched with intTerm1 nothing"; f
+                | Language.RightOp (op,ex) -> (match op with | "*" ->Language.MulInt (f,ex) |"/" -> Language.DivInt (f,ex) )
+               
+        }
+intTerm1:| { Language.Nothing }
+         | TIMES_INT; it=intTerm { Language.RightOp ("*",it) }
+intFactor: 
+                | vname=ID { Printf.printf "Matched int factor vname = %s\n" vname; Language.Var (vname) }
+        | vall=INT { Printf.printf "Matched with intFactor vall=%d\n" vall; Language.Value (Language.Int (vall)) }
+        | LEFT_RBRACK; iae=intArithmExp; RIGHT_RBRACK { iae }       

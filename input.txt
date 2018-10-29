@@ -2,8 +2,9 @@ class A extends Object {
     int b
     #
     int m(int a) 
-    { 
-        a.b([]);
+    {
+	ab=5+6; 
+        
 
     }
 }

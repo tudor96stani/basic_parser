@@ -62,7 +62,9 @@ classDecl = ClassDecl of (string*string*fldDeclList*mthDeclList)
 and
 def = Def of string*classDecl
 and
-progr= Progr of def list;;
+progr= Progr of def list
+and 
+rightOp= Nothing | RightOp of string*exp;;
 
 open Core
 let rec stringifyExpression e = match e with
