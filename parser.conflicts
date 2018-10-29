@@ -1,9 +1,9 @@
 
-** Conflict (shift/reduce) in state 72.
-** Token involved: RIGHT_RBRACK
+** Conflict (shift/reduce) in state 108.
+** Token involved: RIGHT_BRACE
 ** This state is reached from start after reading:
 
-CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE LEFT_RBRACK ID 
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE IF ID THEN LEFT_BRACE blkExp 
 
 ** The derivations that appear below have the following common factor:
 ** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
@@ -15,59 +15,18 @@ def def_list1
 CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG meth_list RIGHT_BRACE 
                                                  meth meth_list1 
                                                  typ ID LEFT_RBRACK param_list RIGHT_RBRACK blkExp 
-                                                                                            LEFT_BRACE exp RIGHT_BRACE 
+                                                                                            LEFT_BRACE exp RIGHT_BRACE SEMICOL 
                                                                                                        (?)
 
-** In state 72, looking ahead at RIGHT_RBRACK, shifting is permitted
+** In state 108, looking ahead at RIGHT_BRACE, shifting is permitted
 ** because of the following sub-derivation:
 
-LEFT_RBRACK ID . RIGHT_RBRACK ID SEMICOL 
+IF ID THEN LEFT_BRACE blkExp . RIGHT_BRACE ELSE LEFT_BRACE blkExp RIGHT_BRACE 
 
-** In state 72, looking ahead at RIGHT_RBRACK, reducing production
-** intFactor -> ID 
+** In state 108, looking ahead at RIGHT_BRACE, reducing production
+** exp -> blkExp 
 ** is permitted because of the following sub-derivation:
 
-intArithmExp 
-intTerm intArithmExp1 
-intFactor intTerm1 
-LEFT_RBRACK intArithmExp RIGHT_RBRACK // lookahead token appears
-            intTerm intArithmExp1 // lookahead token is inherited because intArithmExp1 can vanish
-            intFactor intTerm1 // lookahead token is inherited because intTerm1 can vanish
-            ID . 
-
-** Conflict (shift/reduce) in state 63.
-** Token involved: RIGHT_RBRACK
-** This state is reached from start after reading:
-
-CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE ID EQUALS LEFT_RBRACK ID 
-
-** The derivations that appear below have the following common factor:
-** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
-
-start 
-prog EOF 
-def_list 
-def def_list1 
-CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG meth_list RIGHT_BRACE 
-                                                 meth meth_list1 
-                                                 typ ID LEFT_RBRACK param_list RIGHT_RBRACK blkExp 
-                                                                                            LEFT_BRACE exp RIGHT_BRACE 
-                                                                                                       ID EQUALS exp SEMICOL 
-                                                                                                                 (?)
-
-** In state 63, looking ahead at RIGHT_RBRACK, shifting is permitted
-** because of the following sub-derivation:
-
-LEFT_RBRACK ID . RIGHT_RBRACK ID SEMICOL 
-
-** In state 63, looking ahead at RIGHT_RBRACK, reducing production
-** intFactor -> ID 
-** is permitted because of the following sub-derivation:
-
-intArithmExp 
-intTerm intArithmExp1 
-intFactor intTerm1 
-LEFT_RBRACK intArithmExp RIGHT_RBRACK // lookahead token appears
-            intTerm intArithmExp1 // lookahead token is inherited because intArithmExp1 can vanish
-            intFactor intTerm1 // lookahead token is inherited because intTerm1 can vanish
-            ID . 
+IF ID THEN blkExp ELSE blkExp 
+           LEFT_BRACE exp RIGHT_BRACE SEMICOL // lookahead token appears
+                      blkExp . 

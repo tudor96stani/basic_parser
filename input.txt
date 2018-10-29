@@ -1,10 +1,10 @@
 class A extends Object {
     int b
     #
-    int m(int a) 
+    int m(Object a) 
     {
-	ab=5+6; 
-        
-
+	b=7*5+(21/2-(12/3));
+       	
+	a.tostring([]);
     }
 }

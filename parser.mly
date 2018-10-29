@@ -1,4 +1,4 @@
-%token CLASS XTENDS INT_TYPE FLOAT_TYPE BOOL_TYPE VOID_TYPE IF THEN ELSE NEW WHILE INSTOF TRUE FALSE NULL BOT
+%token CLASS XTENDS INT_TYPE FLOAT_TYPE BOOL_TYPE VOID_TYPE IF THEN ELSE NEW WHILE INSTOF CAST TRUE FALSE NULL BOT
 %token <int> INT
 %token <float> FLOAT 
 %token <string> ID
@@ -14,7 +14,7 @@ start:
   | EOF { None }
   | p = prog; EOF { Some p}
 
-prog: dl = def_list { Progr (dl) }
+prog: dl = def_list { Language.Progr (dl) }
 def_list: d = def;  dl1=def_list1 { d@dl1 }
 def_list1:
   | { [] }
@@ -56,18 +56,19 @@ exp:
   | VOID { Language.Value (Language.Vvoid) }
  (* | vname=ID { Printf.printf "Matched var name %s\n" vname;Language.Var (vname) } *)
   | obj=ID; DOT; fld=ID {Language.Vfld (obj,fld) }
-  | vname=ID; EQUALS; e=exp; SEMICOL  { Language.AsgnV (vname,e) }
+  | vname=ID; EQUALS; e=exp; SEMICOL { Language.AsgnV (vname,e) }
   | obj=ID; DOT; fld=ID; EQUALS; e=exp; SEMICOL  { Language.AsgnF (obj,fld,e) }
   | e1=exp; SEMICOL; e2=exp; SEMICOL  { Language.Seq (e1,e2) }
   | IF; vname=ID; THEN; LEFT_BRACE; then_exp=blkExp; RIGHT_BRACE; ELSE LEFT_BRACE; else_exp=blkExp; RIGHT_BRACE
-    { If (vname,then_exp,else_exp) }
+    { Language.If (vname,then_exp,else_exp) }
   | NEW; cn=ID; LEFT_RBRACK; v=vlist; RIGHT_RBRACK; SEMICOL  { Language.NewObj (cn,v) }
-  | obj=ID; DOT; mname=ID; LEFT_RBRACK; v=meth_inv_params; RIGHT_RBRACK; SEMICOL  { Language.MethInv (obj,mname,v) }
+  | obj=ID; DOT; mname=ID; LEFT_RBRACK; v=meth_inv_params; RIGHT_RBRACK { Language.MethInv (obj,mname,v) }
   | WHILE; v=ID; LEFT_BRACE; e=exp; RIGHT_BRACE { Language.WhileExp (v,e) }
-  | LEFT_RBRACK; cn=ID; RIGHT_RBRACK; v=ID; SEMICOL  { Language.Cast (cn,v) }
-  | v=ID; INSTOF; cn=ID; SEMICOL  { Language.InstOf (v,cn) }
+  | CAST; LEFT_RBRACK; cn=ID; RIGHT_RBRACK; v=ID  { Language.Cast (cn,v) }
+  | v=ID; INSTOF; cn=ID  { Language.InstOf (v,cn) }
   | IF; v=ID; THEN; e1=blkExp; ELSE; e2=blkExp { Language.If (v,e1,e2) }
   | ia=intArithmExp { ia }
+  | ble=blkExp { Language.Blk (ble) }
  (* | fa=floatArithmExp { fa } *) 
 meth_inv_params: 
         | LEFT_BRACK; RIGHT_BRACK { [] }
@@ -81,28 +82,58 @@ paramVal:
        | vall=FLOAT; COMMA { Language.Value (Language.Float (vall)) } 
        | vname=ID; COMMA { Language.Var (vname) }
 
-blkExp: LEFT_BRACE; e=exp; RIGHT_BRACE { Bnvar (e) }
-       | LEFT_BRACE; LEFT_RBRACK; t=typ; vname=ID; RIGHT_RBRACK; e=exp; RIGHT_BRACE { Bvar (t,vname,e) }
-
+blkExp: LEFT_BRACE; e=exp; RIGHT_BRACE; SEMICOL { Bnvar (e) }
+       | LEFT_RBRACK; t=typ; vname=ID; RIGHT_RBRACK; LEFT_BRACE; e=exp; RIGHT_BRACE; SEMICOL { Bvar (t,vname,e) }
+(*Arithmetic operations on int *)
 intArithmExp: t=intTerm; aex=intArithmExp1 
        {
                match aex with
-               | Language.Nothing -> Printf.printf "Matched with intArithmExp1 Nothing"; t
+               | Language.Nothing -> t
                | Language.RightOp (op,ex) -> (match op with | "+" -> Language.AddInt (t,ex) | "-" -> Language.DiffInt (t,ex) )
               
        }
 intArithmExp1: | { Language.Nothing }
-               | PLUS_INT; e=intArithmExp { Language.RightOp ("+",e) } 
+               | PLUS_INT; e=intArithmExp { Language.RightOp ("+",e) }
+               | MINUS_INT; e=intArithmExp { Language.RightOp ("-",e) } 
 intTerm: f=intFactor; it1=intTerm1 
         {
                 match it1 with
-                | Language.Nothing -> Printf.printf "Matched with intTerm1 nothing"; f
+                | Language.Nothing -> f
                 | Language.RightOp (op,ex) -> (match op with | "*" ->Language.MulInt (f,ex) |"/" -> Language.DivInt (f,ex) )
-               
         }
-intTerm1:| { Language.Nothing }
+intTerm1:
+         | { Language.Nothing }
          | TIMES_INT; it=intTerm { Language.RightOp ("*",it) }
+         | DIVIDE_INT; it=intTerm { Language.RightOp ("/",it) }
 intFactor: 
-                | vname=ID { Printf.printf "Matched int factor vname = %s\n" vname; Language.Var (vname) }
-        | vall=INT { Printf.printf "Matched with intFactor vall=%d\n" vall; Language.Value (Language.Int (vall)) }
-        | LEFT_RBRACK; iae=intArithmExp; RIGHT_RBRACK { iae }       
+        | vname=ID {  Language.Var (vname) }
+        | vall=INT {  Language.Value (Language.Int (vall)) }
+        | LEFT_RBRACK; iae=intArithmExp; RIGHT_RBRACK { iae }     
+
+(*Arithmetic operations on float *)
+floatArithmExp: t=floatTerm; aex=floatArithmExp1
+        {
+                match aex with
+                | Language.Noting -> t
+                | Language.RightOp (op,ex) -> (match op with | "+" -> Language.AddFlt (t,ex) | "-" -> Language.DiffFlt (t,ex) )
+        }
+floatArithmExp1: 
+        | {Language.Nothing}
+        | PLUS_FLOAT; e=floatArithmExp { Language.RightOp ("+",e) }
+        | MINUS_FLOAT; e=floatArithmExp { Language.RightOp ("-",e) }
+
+floatTerm: f=floatFactor; ft1=floatTerm1
+        {
+                match ft1 with
+                | Language.Nothing -> f
+                | Language.RightOp (op,ex) -> (match op with | "*" -> Language.MulFlt (f,ex) | "/" -> Language.DivFlt (f,ex) )
+        }
+floatTerm1:
+        | { Language.Nothing }
+        | TIMES_FLOAT; ft=floatTerm { Language.RightOp ("*",ft) }
+        | DIVIDE_FLOAT; ft=floatTerm { Language.RightOp ("/",ft) }
+floatFactor:
+        | vname=ID {Language.Var (vname) }
+        | vall=FLOAT {Language.Value (Language.Int (vall)) }
+        | LEFT_RBRACK; flae=floatArithmExp; RIGHT_RBRACK { flae }
+

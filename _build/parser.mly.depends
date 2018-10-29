@@ -1,2 +1,2 @@
-parser.ml: Language Lexing Printf
+parser.ml: Language Lexing
 parser.mli: Language Lexing

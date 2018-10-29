@@ -35,6 +35,7 @@ rule read =
   | "new"    { NEW }
   | "while"  { WHILE }
   | "instanceof" { INSTOF }
+  | "cast"   { CAST }
   | "true"   { TRUE }
   | "false"  { FALSE }
   | "null"   { NULL }

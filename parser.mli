@@ -50,6 +50,7 @@ type token =
   | COMMA
   | COLON
   | CLASS
+  | CAST
   | BOT
   | BOOL_TYPE
   | AND
