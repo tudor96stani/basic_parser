@@ -62,17 +62,26 @@ exp:
   | IF; vname=ID; THEN; LEFT_BRACE; then_exp=blkExp; RIGHT_BRACE; ELSE LEFT_BRACE; else_exp=blkExp; RIGHT_BRACE
     { If (vname,then_exp,else_exp) }
   | NEW; cn=ID; LEFT_RBRACK; v=vlist; RIGHT_RBRACK; SEMICOL  { Language.NewObj (cn,v) }
-  | obj=ID; DOT; mname=ID; LEFT_RBRACK; v=vlist; RIGHT_RBRACK; SEMICOL  { Language.MethInv (obj,mname,v) }
+  | obj=ID; DOT; mname=ID; LEFT_RBRACK; v=meth_inv_params; RIGHT_RBRACK; SEMICOL  { Language.MethInv (obj,mname,v) }
   | WHILE; v=ID; LEFT_BRACE; e=exp; RIGHT_BRACE { Language.WhileExp (v,e) }
   | LEFT_RBRACK; cn=ID; RIGHT_RBRACK; v=ID; SEMICOL  { Language.Cast (cn,v) }
   | v=ID; INSTOF; cn=ID; SEMICOL  { Language.InstOf (v,cn) }
 
-(*
-vlist: 
-  |{[]} 
-  | vl1=vlist; e=v { e@vl1 }
-v: e=exp; COMMA { [e] }
-*)
-vlist:|{[]}
-  |v=exp;COMMA;vl=vlist {[v]@vl}
+
+
+meth_inv_params: 
+        | LEFT_BRACK; RIGHT_BRACK { [] }
+        | vl=vlist { vl } 
+
+vlist:
+  | {[]}
+  |vl=vlist; v=paramVal {[v]@vl}
+  (*| vl = separated_list (COMMA, paramVal) { vl } *)
+
+paramVal:
+       | vall=INT; COMMA { Language.Value (Language.Int (vall)) }
+       | vall=FLOAT; COMMA { Language.Value (Language.Float (vall)) } 
+       | vname=ID; COMMA { Language.Var (vname) }
+
+
 blkExp: LEFT_BRACE; e=exp; RIGHT_BRACE { Bnvar (e) }

@@ -1,0 +1,67 @@
+
+** Conflict (reduce/reduce) in state 79.
+** Token involved: RIGHT_RBRACK
+** This state is reached from start after reading:
+
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE ID DOT ID LEFT_RBRACK 
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+prog EOF 
+def_list 
+def def_list1 
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG meth_list RIGHT_BRACE 
+                                                 meth meth_list1 
+                                                 typ ID LEFT_RBRACK param_list RIGHT_RBRACK blkExp 
+                                                                                            LEFT_BRACE exp RIGHT_BRACE 
+                                                                                                       ID DOT ID LEFT_RBRACK meth_inv_params RIGHT_RBRACK SEMICOL // lookahead token appears
+                                                                                                                             vlist // lookahead token is inherited
+                                                                                                                             (?)
+
+** In state 79, looking ahead at RIGHT_RBRACK, reducing production
+** loption(separated_nonempty_list(COMMA,paramVal)) -> 
+** is permitted because of the following sub-derivation:
+
+loption(separated_nonempty_list(COMMA,paramVal)) // lookahead token is inherited
+. 
+
+** In state 79, looking ahead at RIGHT_RBRACK, reducing production
+** vlist -> 
+** is permitted because of the following sub-derivation:
+
+. 
+
+** Conflict (reduce/reduce) in state 38.
+** Token involved: RIGHT_RBRACK
+** This state is reached from start after reading:
+
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE NEW ID LEFT_RBRACK 
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+prog EOF 
+def_list 
+def def_list1 
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG meth_list RIGHT_BRACE 
+                                                 meth meth_list1 
+                                                 typ ID LEFT_RBRACK param_list RIGHT_RBRACK blkExp 
+                                                                                            LEFT_BRACE exp RIGHT_BRACE 
+                                                                                                       NEW ID LEFT_RBRACK vlist RIGHT_RBRACK SEMICOL // lookahead token appears
+                                                                                                                          (?)
+
+** In state 38, looking ahead at RIGHT_RBRACK, reducing production
+** loption(separated_nonempty_list(COMMA,paramVal)) -> 
+** is permitted because of the following sub-derivation:
+
+loption(separated_nonempty_list(COMMA,paramVal)) // lookahead token is inherited
+. 
+
+** In state 38, looking ahead at RIGHT_RBRACK, reducing production
+** vlist -> 
+** is permitted because of the following sub-derivation:
+
+. 
