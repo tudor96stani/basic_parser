@@ -67,29 +67,64 @@ and
 rightOp= Nothing | RightOp of string*exp;;
 
 open Core
-let rec stringifyExpression e = match e with
+let rec concat l =
+        let rec loop acc = function 
+                | [] -> acc
+                | h::t -> loop (acc^h) t
+        in
+        loop (match (List.hd l) with |None -> "" | Some v -> v) (match (List.tl l) with |None -> [] |Some tl -> tl)
+;;
+let rec printType outc t = match t with 
+        | Tprim (tpr) -> "(Tprim (" ^ (match tpr with |Tint -> "Tint" |Tfloat -> "Tfloat" |Tbool -> "Tbool" |Tvoid -> "Tvoid" ) ^ "))"
+        | Tclass (n) -> "Tclass (\""^ n ^ "\")"
+        | Tbot -> "Tbot"
+and    
+stringifyExpression outc e = match e with
       | Value (x) -> 
             (match x with 
                   | Vnull -> "null"
                   | Int (value) -> string_of_int value
                   | Float (value) -> string_of_float value
-                  | Bool (value) -> if value then "true" else "false"
-                  | Vvoid -> "_|_"
+                  | Bool (value) -> if value then "\"true\"" else "\"false\""
+                  | Vvoid -> "\"void\""
             )
-      | Var (vname) -> "Var(" ^ vname ^ ")"
-      | Vfld (objName,fldName) -> "Vfld(" ^ objName ^ "," ^ fldName ^ ")"
-      | AsgnV (vname,innerExp) -> "AsgnV(" ^ vname ^ "," ^ (stringifyExpression innerExp) ^ ")"
-      | AsgnF (objName,fldName,innerExp) -> "AsgnF(" ^ objName ^ "," ^ fldName ^ "," ^ (stringifyExpression innerExp) ^ ")"
-      | Seq (e1,e2) -> "Seq(" ^ (stringifyExpression e1) ^ "," ^(stringifyExpression e2) ^ ")"
-      | AddInt (e1,e2) -> "AddInt(" ^ (stringifyExpression e1) ^ "," ^ (stringifyExpression e2) ^ ")"
+      | Var (vname) -> "Var(\"" ^ vname ^ "\")"
+      | Vfld (objName,fldName) -> "Vfld(\"" ^ objName ^ "\",\"" ^ fldName ^ "\")"
+      | AsgnV (vname,innerExp) -> "AsgnV(\"" ^ vname ^ "\"," ^ (stringifyExpression outc innerExp) ^ ")"
+      | AsgnF (objName,fldName,innerExp) -> "AsgnF(\"" ^ objName ^ "\",\"" ^ fldName ^ "\"," ^ (stringifyExpression outc innerExp) ^ ")"
+      | Seq (e1,e2) -> "Seq(" ^ (stringifyExpression outc e1) ^ "," ^(stringifyExpression outc e2) ^ ")"
+      | If (cond,e1,e2) -> "If(\"" ^ cond ^ "\"," ^ (stringifyBlkExpression outc e1) ^ "," ^ (stringifyBlkExpression outc e2) ^ ")"
+      | AddInt (e1,e2) -> "AddInt(" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | DiffInt (e1,e2) -> "DiffInt(" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
       | _ -> ""
+and
+stringifyBlkExpression outc be = match be with
+      | Bvar (t,name,ex)-> "Bvar (" ^ (printType outc t) ^ ",\"" ^ name ^ "\"," ^ (stringifyExpression outc ex)
+      | Bnvar (exp) -> "Bnvar (" ^ (stringifyExpression outc exp) ^ ")"
+and
+(*ClassDecl of string*string*fldDeclList*methDeclList *)
+printClassDecl outc d =
+       match d with Def (s,c) ->( 
+        match c with ClassDecl (clName,parName,fldLst,mthLst) -> fprintf outc "(\"%s\",\"%s\",[%s],[%s])" clName parName (printFldLst outc fldLst) (printMthLst outc mthLst)
+         )
+and
+printFldLst outc l = concat (List.map l (printFld outc)) 
+and
+printFld outc f = match f with FldDecl (t,n) -> (printType outc t) ^ "," ^ "\"" ^ n ^ "\";"
+and
+printMthLst outc lst = concat (List.map lst (printMth outc))
+and
+printMth outc m = match m with MethDecl (t,n,prlst,ex) -> (printType outc t) ^ ",\"" ^ n ^ "\",[" ^ (printMPrmLst outc prlst) ^"]," ^ (stringifyBlkExpression outc ex)
+and
+printMPrmLst outc lst = concat (List.map lst (printMPrm outc))
+and
+printMPrm outc p = match p with Fprm (t,n) -> (printType outc t) ^ ",\"" ^ n ^ "\";"
+;;
 
-let rec output_value outc ast = 
-      let stringexp = stringifyExpression ast in
-            fprintf outc "%s" stringexp
-(*
-  | AddInt (a,b) -> 
-            (match (a,b) with | (Value (Int (x)), Value (Int (y))) -> fprintf outc  "AddInt (Value (Int (%d)),Value (Int (%d)))\n" x y 
-                              | (_,_) -> fprintf outc "\n")
-  | _ -> fprintf outc "\n"
-  *)
+(* Progr of def list *)
+let output_value outc ast =
+        match ast with 
+        Progr (l) -> 
+                List.iter l 
+                (printClassDecl outc);;
+(*let output_value outc ast = List.iter ast (printClassDecl outc) ;;*)

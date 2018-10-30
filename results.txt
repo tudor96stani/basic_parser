@@ -1,0 +1,3 @@
+("A","Object",[int,"b";],[int,"m",[Object,"a";],Bnvar (Seq(Seq(Seq(Seq(Seq(AsgnV("b",AddInt(,DiffInt(,))),AddInt(5,8)),),),),))])
+
+("Main","Object",[A,"a";],[int,"main",[string,"args";],Bnvar (Seq(,))])

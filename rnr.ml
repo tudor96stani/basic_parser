@@ -19,9 +19,9 @@ let parse_with_error lexbuf =
 let rec parse_and_print lexbuf =
   match parse_with_error lexbuf with
     | Some value ->
-      (* printf "%a\n" Language.output_value value; *)
+      printf "%a\n" Language.output_value value;
       parse_and_print lexbuf
-    | None -> Printf.printf "Lexical and syntactical analysis completed succesfully\n\n"
+    | None -> Printf.printf "***********************************\nLexical and syntactical analysis completed succesfully\n***********************************\n"
     
 let loop filename () =
       let inx = In_channel.create filename in

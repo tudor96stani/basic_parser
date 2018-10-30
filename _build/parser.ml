@@ -2627,7 +2627,7 @@ and start : (Lexing.lexbuf -> token) -> Lexing.lexbuf -> (
         _menhir_env._menhir_error <- true;
         _menhir_errorcase _menhir_env (Obj.magic _menhir_stack) MenhirState0)
 
-# 233 "/Users/tudorstanila/.opam/default/lib/menhir/standard.mly"
+# 233 "/home/tudor96stani/.opam/system/lib/menhir/standard.mly"
   
 
 # 2634 "parser.ml"

@@ -1,0 +1,12 @@
+class A extends Object {
+	int f1
+	#
+	int m1(int a,int b) { 
+		let (int:c)
+		{
+			c=a+b;;
+			this.f1 = (f1+c);;
+			c;;
+		};
+	};
+}
