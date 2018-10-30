@@ -88,18 +88,43 @@ stringifyExpression outc e = match e with
                   | Bool (value) -> if value then "\"true\"" else "\"false\""
                   | Vvoid -> "\"void\""
             )
-      | Var (vname) -> "Var(\"" ^ vname ^ "\")"
-      | Vfld (objName,fldName) -> "Vfld(\"" ^ objName ^ "\",\"" ^ fldName ^ "\")"
-      | AsgnV (vname,innerExp) -> "AsgnV(\"" ^ vname ^ "\"," ^ (stringifyExpression outc innerExp) ^ ")"
-      | AsgnF (objName,fldName,innerExp) -> "AsgnF(\"" ^ objName ^ "\",\"" ^ fldName ^ "\"," ^ (stringifyExpression outc innerExp) ^ ")"
-      | Seq (e1,e2) -> "Seq(" ^ (stringifyExpression outc e1) ^ "," ^(stringifyExpression outc e2) ^ ")"
-      | If (cond,e1,e2) -> "If(\"" ^ cond ^ "\"," ^ (stringifyBlkExpression outc e1) ^ "," ^ (stringifyBlkExpression outc e2) ^ ")"
-      | AddInt (e1,e2) -> "AddInt(" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
-      | DiffInt (e1,e2) -> "DiffInt(" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
-      | _ -> ""
+      | Var (vname) -> "Var (\"" ^ vname ^ "\")"
+      | Vfld (objName,fldName) -> "Vfld (\"" ^ objName ^ "\",\"" ^ fldName ^ "\")"
+      | AsgnV (vname,innerExp) -> "AsgnV (\"" ^ vname ^ "\"," ^ (stringifyExpression outc innerExp) ^ ")"
+      | AsgnF (objName,fldName,innerExp) -> "AsgnF (\"" ^ objName ^ "\",\"" ^ fldName ^ "\"," ^ (stringifyExpression outc innerExp) ^ ")"
+      | Seq (e1,e2) -> "Seq (" ^ (stringifyExpression outc e1) ^ "," ^(stringifyExpression outc e2) ^ ")"
+      | If (cond,e1,e2) -> "If (\"" ^ cond ^ "\"," ^ (stringifyBlkExpression outc e1) ^ "," ^ (stringifyBlkExpression outc e2) ^ ")"
+      | AddInt (e1,e2) -> "AddInt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | DiffInt (e1,e2) -> "DiffInt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | DivInt (e1,e2) -> "DivInt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | MulInt (e1,e2) -> "MulInt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | AddFlt (e1,e2) -> "AddFlt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | DiffFlt (e1,e2) -> "DiffFlt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | MulFlt (e1,e2) -> "MulFlt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | DivFlt (e1,e2) -> "DivFlt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | NewObj (t,varl) -> "NewObj (\"" ^ t ^ "\",[" ^ (printVarList outc varl) ^ "])"
+      | MethInv (obj,mth,vl) -> "MethInv (\"" ^ obj ^ "\",\"" ^ mth ^ "\",[" ^ (printVarList outc vl) ^ "])"
+      | WhileExp (v,e) -> "WhileExp (\"" ^ v ^ "\"," ^ (stringifyExpression outc e) ^ ")"
+      | Cast (t,vname) -> "Cast (\"" ^ t ^ "\",\"" ^ vname ^ "\")"
+      | InstOf (c,vname) -> "InstOf (\"" ^ c ^ "\",\"" ^ vname ^ "\" )"
+      | Blk (b)-> "Blk (" ^ (stringifyBlkExpression outc b) ^ ")"
+and
+printVarList outc vl = concat (List.map vl (printVar outc))
+and
+printVar outc v = match v with 
+        | Value (x) ->
+                        ( match x with
+                                |Vnull -> "null"
+                                | Int (value) -> string_of_int value
+                                | Float (value) -> string_of_float value
+                                | Bool (value) -> if value then "\"true\"" else "\"false\""
+                                | Vvoid -> "\"void\""
+                        )
+        | Var (vname) -> "Var (\"" ^ vname ^ "\")"
+
 and
 stringifyBlkExpression outc be = match be with
-      | Bvar (t,name,ex)-> "Bvar (" ^ (printType outc t) ^ ",\"" ^ name ^ "\"," ^ (stringifyExpression outc ex)
+      | Bvar (t,name,ex)-> "Bvar (" ^ (printType outc t) ^ ",\"" ^ name ^ "\"," ^ (stringifyExpression outc ex) ^ ")"
       | Bnvar (exp) -> "Bnvar (" ^ (stringifyExpression outc exp) ^ ")"
 and
 (*ClassDecl of string*string*fldDeclList*methDeclList *)

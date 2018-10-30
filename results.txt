@@ -1,3 +1,1 @@
-("A","Object",[int,"b";],[int,"m",[Object,"a";],Bnvar (Seq(Seq(Seq(Seq(Seq(AsgnV("b",AddInt(,DiffInt(,))),AddInt(5,8)),),),),))])
-
-("Main","Object",[A,"a";],[int,"main",[string,"args";],Bnvar (Seq(,))])
+("A","Object",[(Tprim (Tint)),"f1";],[(Tprim (Tint)),"m1",[(Tprim (Tint)),"a";(Tprim (Tint)),"b";],Bnvar (Blk (Bvar ((Tprim (Tint)),"c",Seq (AsgnV ("c",AddInt (Var ("a"),Var ("b"))),Seq (AsgnF ("this","f1",AddInt (Var ("f1"),Var ("c"))),Var ("c"))))))])
