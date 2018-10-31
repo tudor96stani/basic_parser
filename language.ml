@@ -82,11 +82,11 @@ and
 stringifyExpression outc e = match e with
       | Value (x) -> 
             (match x with 
-                  | Vnull -> "null"
-                  | Int (value) -> string_of_int value
-                  | Float (value) -> string_of_float value
-                  | Bool (value) -> if value then "\"true\"" else "\"false\""
-                  | Vvoid -> "\"void\""
+                  | Vnull -> "Vnull "
+                  | Int (value) -> "Int (" ^ (string_of_int value) ^ ")"
+                  | Float (value) -> "Float (" ^ (string_of_float value) ^ ")"
+                  | Bool (value) -> if value then "Bool (true)" else "Bool (false)"
+                  | Vvoid -> "Vvoid "
             )
       | Var (vname) -> "Var (\"" ^ vname ^ "\")"
       | Vfld (objName,fldName) -> "Vfld (\"" ^ objName ^ "\",\"" ^ fldName ^ "\")"
@@ -114,11 +114,11 @@ and
 printVar outc v = match v with 
         | Value (x) ->
                         ( match x with
-                                |Vnull -> "null"
-                                | Int (value) -> string_of_int value
-                                | Float (value) -> string_of_float value
-                                | Bool (value) -> if value then "\"true\"" else "\"false\""
-                                | Vvoid -> "\"void\""
+                                |Vnull -> "Vnull "
+                                | Int (value) -> "Int (" ^ (string_of_int value) ^ ")"
+                                | Float (value) -> "Float (" ^ (string_of_float value) ^ ")"
+                                | Bool (value) -> if value then "Bool (true)" else "Bool (false)"
+                                | Vvoid -> "Vvoid "
                         )
         | Var (vname) -> "Var (\"" ^ vname ^ "\")"
 

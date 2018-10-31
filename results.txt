@@ -1,1 +1,0 @@
-("A","Object",[(Tprim (Tint)),"f1";],[(Tprim (Tint)),"m1",[(Tprim (Tint)),"a";(Tprim (Tint)),"b";],Bnvar (Blk (Bvar ((Tprim (Tint)),"c",Seq (AsgnV ("c",AddInt (Var ("a"),Var ("b"))),Seq (AsgnF ("this","f1",AddInt (Var ("f1"),Var ("c"))),Var ("c"))))))])
