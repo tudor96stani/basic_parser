@@ -1,13 +1,13 @@
-
-
 class A extends Object {
 	int f1
 	#
 	int m1(int a,int b) {
 		let (int:c)
 		{
-			a.tostr([]);;
-			c=(f1 *. 1.45 - 2.0)/7.0;;
+			a=(5+4)/(4+9*(2+c));
+			a.tostr([]);
+			c=(f1 *. 1.45 - 2.0)/7.0;
+			b
 		};
 	};
 }

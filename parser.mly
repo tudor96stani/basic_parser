@@ -58,7 +58,7 @@ exp:
   | obj=ID; DOT; fld=ID {Language.Vfld (obj,fld) }
   | vname=ID; EQUALS; e=exp; SEMICOL { Language.AsgnV (vname,e) }
   | obj=ID; DOT; fld=ID; EQUALS; e=exp; SEMICOL  { Language.AsgnF (obj,fld,e) }
-  | e1=exp; SEMICOL; e2=exp; SEMICOL  { Language.Seq (e1,e2) }
+  | e1=exp; e2=exp  { Language.Seq (e1,e2) }
   | IF; vname=ID; THEN; LEFT_BRACE; then_exp=blkExp; RIGHT_BRACE; ELSE LEFT_BRACE; else_exp=blkExp; RIGHT_BRACE
     { Language.If (vname,then_exp,else_exp) }
   | NEW; cn=ID; LEFT_RBRACK; v=vlist; RIGHT_RBRACK; SEMICOL  { Language.NewObj (cn,v) }
@@ -114,7 +114,7 @@ factor:
 	| LEFT_RBRACK; iae=intArithmExp; RIGHT_RBRACK { iae }  
 	| LEFT_RBRACK; fae=floatArithmExp; RIGHT_RBRACK {fae }   
 
-(*Arithmetic operations on float *)
+
 floatArithmExp: t=floatTerm; aex=floatArithmExp1
         {
                 match aex with
@@ -141,7 +141,6 @@ floatFactor:
         | vall=FLOAT {Language.Value (Language.Float (vall)) }
         | LEFT_RBRACK; flae=floatArithmExp; RIGHT_RBRACK { flae }
 
-(* Logical expressions *)
 logExp: t=logTerm; le=logExp1
 	{
 		match le with

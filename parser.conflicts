@@ -1,0 +1,65 @@
+
+** Conflict (shift/reduce) in state 99.
+** Token involved: LEFT_RBRACK
+** This state is reached from start after reading:
+
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE ID DOT ID 
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+prog EOF 
+def_list 
+def def_list1 
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG meth_list RIGHT_BRACE 
+                                                 meth meth_list1 
+                                                 typ ID LEFT_RBRACK param_list RIGHT_RBRACK blkExp 
+                                                                                            LEFT_BRACE exp RIGHT_BRACE SEMICOL 
+                                                                                                       (?)
+
+** In state 99, looking ahead at LEFT_RBRACK, reducing production
+** exp -> ID DOT ID 
+** is permitted because of the following sub-derivation:
+
+exp exp // lookahead token appears because exp can begin with LEFT_RBRACK
+ID DOT ID . 
+
+** In state 99, looking ahead at LEFT_RBRACK, shifting is permitted
+** because of the following sub-derivation:
+
+ID DOT ID . LEFT_RBRACK meth_inv_params RIGHT_RBRACK SEMICOL 
+
+** Conflict (shift/reduce) in state 96.
+** Tokens involved: WHILE VOID TRUE NULL NEW LET LEFT_RBRACK INT IF ID FLOAT FALSE CAST
+** The following explanations concentrate on token WHILE.
+** This state is reached from start after reading:
+
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG typ ID LEFT_RBRACK param_list RIGHT_RBRACK LEFT_BRACE exp exp 
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+start 
+prog EOF 
+def_list 
+def def_list1 
+CLASS ID XTENDS ID LEFT_BRACE field_list HASHTAG meth_list RIGHT_BRACE 
+                                                 meth meth_list1 
+                                                 typ ID LEFT_RBRACK param_list RIGHT_RBRACK blkExp 
+                                                                                            LEFT_BRACE exp RIGHT_BRACE SEMICOL 
+                                                                                                       (?)
+
+** In state 96, looking ahead at WHILE, reducing production
+** exp -> exp exp 
+** is permitted because of the following sub-derivation:
+
+exp exp // lookahead token appears because exp can begin with WHILE
+exp exp . 
+
+** In state 96, looking ahead at WHILE, shifting is permitted
+** because of the following sub-derivation:
+
+exp exp 
+    exp exp 
+        . WHILE ID LEFT_BRACE exp RIGHT_BRACE 
