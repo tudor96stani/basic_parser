@@ -17,6 +17,7 @@ type token =
   | RIGHT_BRACE
   | PLUS_INT
   | PLUS_FLOAT
+  | OROR
   | OR
   | NULL
   | NOT
@@ -54,6 +55,7 @@ type token =
   | CAST
   | BOT
   | BOOL_TYPE
+  | ANDAND
   | AND
 
 (* This exception is raised by the monolithic API functions. *)

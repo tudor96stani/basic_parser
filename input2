@@ -7,7 +7,7 @@ class A extends Object {
 			a = (5+7*2);
 			a.toString([]);;
 			c = a;
-			c=a;;
+			c= a<a;;
 			c.tostring([]);;
 		}
 	}

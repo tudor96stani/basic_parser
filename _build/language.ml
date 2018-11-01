@@ -65,7 +65,7 @@ and
 progr= Progr of def list
 and 
 rightOp= Nothing | RightOp of string*exp;;
-
+exception MatchExpressionException of string;;
 open Core
 let rec concat l =
         let rec loop acc = function 
@@ -102,12 +102,22 @@ stringifyExpression outc e = match e with
       | DiffFlt (e1,e2) -> "DiffFlt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
       | MulFlt (e1,e2) -> "MulFlt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
       | DivFlt (e1,e2) -> "DivFlt (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | LglAnd (e1,e2) -> "LglAnd (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | LglOr (e1,e2) -> "LglOr (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | LglNeg (e) -> "LglNeg (" ^ (stringifyExpression outc e) ^ ")" 
+      | Less (e1,e2) -> "Less (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | LessEq (e1,e2) -> "LessEq (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | Eq (e1,e2) -> "Eq (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | NEq (e1,e2) -> "NEq (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | GrEq (e1,e2) -> "GrEq (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
+      | Gr (e1,e2) -> "Gr (" ^ (stringifyExpression outc e1) ^ "," ^ (stringifyExpression outc e2) ^ ")"
       | NewObj (t,varl) -> "NewObj (\"" ^ t ^ "\",[" ^ (printVarList outc varl) ^ "])"
       | MethInv (obj,mth,vl) -> "MethInv (\"" ^ obj ^ "\",\"" ^ mth ^ "\",[" ^ (printVarList outc vl) ^ "])"
       | WhileExp (v,e) -> "WhileExp (\"" ^ v ^ "\"," ^ (stringifyExpression outc e) ^ ")"
       | Cast (t,vname) -> "Cast (\"" ^ t ^ "\",\"" ^ vname ^ "\")"
       | InstOf (c,vname) -> "InstOf (\"" ^ c ^ "\",\"" ^ vname ^ "\" )"
       | Blk (b)-> "Blk (" ^ (stringifyBlkExpression outc b) ^ ")"
+      | _ -> raise (MatchExpressionException ("Could not match an expression"))
 and
 printVarList outc vl = concat (List.map vl (printVar outc))
 and

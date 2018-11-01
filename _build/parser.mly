@@ -5,11 +5,12 @@
 %token VOID
 %token COLON COMMA SEMICOL DOT LEFT_BRACE RIGHT_BRACE LEFT_BRACK RIGHT_BRACK LEFT_RBRACK RIGHT_RBRACK
 %token EQUALS HASHTAG VVOID PLUS_FLOAT MINUS_FLOAT TIMES_FLOAT DIVIDE_FLOAT PLUS_INT MINUS_INT TIMES_INT DIVIDE_INT
-%token AND OR NOT GR LS GE LE EQEQ NE
+%token AND ANDAND OROR OR NOT GR LS GE LE EQEQ NE
 %token EOF
 
-%left PLUS_INT PLUS_FLOAT MINUS_INT MINUS_FLOAT
-%left TIMES_INT TIMES_FLOAT DIVIDE_INT DIVIDE_FLOAT
+%left PLUS_INT PLUS_FLOAT MINUS_INT MINUS_FLOAT OROR
+%left TIMES_INT TIMES_FLOAT DIVIDE_INT DIVIDE_FLOAT ANDAND
+%nonassoc NOT GR LS GE LE EQEQ NE
 
 %start <Language.progr option> start
 %%
@@ -50,14 +51,8 @@ param_list: pr=prm; pl1=param_list1 { pr@pl1 }
 param_list1: | { [] }
              | COMMA; pl=param_list { pl }
 prm: t=typ; pn=ID { [Language.Fprm (t,pn)]}
-exp:(* 
-  | NULL{ Language.Value (Language.Vnull) }
-  | TRUE { Language.Value (Language.Bool (true))}
-  | FALSE { Language.Value (Language.Bool (false))}
-  | VOID { Language.Value (Language.Vvoid) }
-
-  | obj=ID; DOT; fld=ID {Language.Vfld (obj,fld) }
-*)| vname=ID; EQUALS; e=arithExp { Language.AsgnV (vname,e) }
+exp:
+  | vname=ID; EQUALS; e=arithExp { Language.AsgnV (vname,e) }
   | obj=ID; DOT; fld=ID; EQUALS; e=arithExp  { Language.AsgnF (obj,fld,e) }
   | e1=exp;SEMICOL; e2=exp; SEMICOL  { Language.Seq (e1,e2) }
   | IF; vname=ID; THEN; LEFT_BRACE; then_exp=blkExp; RIGHT_BRACE; ELSE LEFT_BRACE; else_exp=blkExp; RIGHT_BRACE
@@ -68,17 +63,15 @@ exp:(*
   | CAST; LEFT_RBRACK; cn=ID; RIGHT_RBRACK; v=ID{ Language.Cast (cn,v) }
   | v=ID; INSTOF; cn=ID { Language.InstOf (v,cn) }
   | LET; ble=blkExp { Language.Blk (ble) } 
-  (*| ia=intArithmExp { ia }
-  | fa=floatArithmExp { fa } 
-  | le=logExp { le }*)
   | ae=arithExp { ae }
+
 meth_inv_params: 
         | LEFT_BRACK; RIGHT_BRACK { [] }
         | vl=vlist { vl } 
 vlist:
   | {[]}
   |vl=vlist; v=paramVal {[v]@vl}
-  (*| vl = separated_list (COMMA, paramVal) { vl } *)
+
 paramVal:
        | vall=INT; COMMA { Language.Value (Language.Int (vall)) }
        | vall=FLOAT; COMMA { Language.Value (Language.Float (vall)) } 
@@ -86,83 +79,7 @@ paramVal:
 
 blkExp: LEFT_BRACE; e=exp; RIGHT_BRACE { Language.Bnvar (e) }
        | LEFT_RBRACK; t=typ; COLON; vname=ID; RIGHT_RBRACK; LEFT_BRACE; e=exp; RIGHT_BRACE  { Language.Bvar (t,vname,e) }
-(*Arithmetic operations on int 
-intArithmExp: t=intTerm; aex=intArithmExp1 
-       {
-               match aex with
-               | Language.Nothing -> t
-               | Language.RightOp (op,ex) -> (match op with | "+" -> Language.AddInt (t,ex) | "-" -> Language.DiffInt (t,ex) )
-              
-       }
-intArithmExp1: | { Language.Nothing }
-               | PLUS_INT; e=intArithmExp { Language.RightOp ("+",e) }
-               | MINUS_INT; e=intArithmExp { Language.RightOp ("-",e) } 
-intTerm: f=factor; it1=intTerm1 
-        {
-                match it1 with
-                | Language.Nothing -> f
-                | Language.RightOp (op,ex) -> (match op with | "*" ->Language.MulInt (f,ex) |"/" -> Language.DivInt (f,ex) )
-        }
-intTerm1:
-         | { Language.Nothing }
-         | TIMES_INT; it=intTerm { Language.RightOp ("*",it) }
-         | DIVIDE_INT; it=intTerm { Language.RightOp ("/",it) }
-factor: 
-        | vname=ID {  Language.Var (vname) }
-        | vall=INT {  Language.Value (Language.Int (vall)) }
-        | vall=FLOAT { Language.Value (Language.Float (vall)) }
-	| LEFT_RBRACK; iae=intArithmExp; RIGHT_RBRACK { iae }  
-	| LEFT_RBRACK; fae=floatArithmExp; RIGHT_RBRACK {fae }   
 
-
-floatArithmExp: t=floatTerm; aex=floatArithmExp1
-        {
-                match aex with
-                | Language.Nothing -> t
-                | Language.RightOp (op,ex) -> (match op with | "+" -> Language.AddFlt (t,ex) | "-" -> Language.DiffFlt (t,ex) )
-        }
-floatArithmExp1: 
-        | {Language.Nothing}
-        | PLUS_FLOAT; e=floatArithmExp { Language.RightOp ("+",e) }
-        | MINUS_FLOAT; e=floatArithmExp { Language.RightOp ("-",e) }
-
-floatTerm: f=factor; ft1=floatTerm1
-        {
-                match ft1 with
-                | Language.Nothing -> f
-                | Language.RightOp (op,ex) -> (match op with | "*" -> Language.MulFlt (f,ex) | "/" -> Language.DivFlt (f,ex) )
-        }
-floatTerm1:
-        | { Language.Nothing }
-        | TIMES_FLOAT; ft=floatTerm { Language.RightOp ("*",ft) }
-        | DIVIDE_FLOAT; ft=floatTerm { Language.RightOp ("/",ft) }
-floatFactor:
-        | vname=ID {Language.Var (vname) }
-        | vall=FLOAT {Language.Value (Language.Float (vall)) }
-        | LEFT_RBRACK; flae=floatArithmExp; RIGHT_RBRACK { flae }
-
-logExp: t=logTerm; le=logExp1
-	{
-		match le with
-		| Language.Nothing -> t
-		| Language.RightOp (op,ex) -> Language.LglOr (t,ex)
-	}
-logExp1:
-	| { Language.Nothing }
-	| OR; OR; e=logExp { Language.RightOp ("||",e) }
-logTerm: f=factor; lt1=logTerm1
-	{
-		match lt1 with
-		| Language.Nothing -> f
-		| Language.RightOp (op,ex) -> Language.LglAnd (f,ex)
-	}
-logTerm1:
-	| {Language.Nothing}
-	| AND; AND; lt=logTerm { Language.RightOp ("&&",lt) }
-logFactor: | vname = ID { Language.Var (vname) }
- 	   | LEFT_RBRACK; l=logExp1; RIGHT_RBRACK { l }
-
-*)
 arithExp:
 	| i=INT { Language.Value (Language.Int (i)) }
 	| f=FLOAT {Language.Value (Language.Float (f)) }
@@ -181,4 +98,12 @@ arithExp:
 	| e1=arithExp; TIMES_FLOAT; e2=arithExp { Language.MulFlt (e1,e2) }
 	| e1=arithExp; DIVIDE_INT; e2=arithExp { Language.DivInt (e1,e2) }
 	| e1=arithExp; DIVIDE_FLOAT; e2=arithExp { Language.DivFlt (e1,e2) }
-	
+	| e1=arithExp; ANDAND; e2=arithExp {Language.LglAnd (e1,e2) }
+	| e1=arithExp; OROR; e2=arithExp {Language.LglOr (e1,e2) }
+	| NOT; e=arithExp { Language.LglNeg (e) }
+	| e1=arithExp; GR; e2=arithExp { Language.Gr (e1,e2) }
+	| e1=arithExp; LS; e2=arithExp { Language.Less (e1,e2) }
+	| e1=arithExp; GE; e2=arithExp { Language.GrEq (e1,e2) }
+	| e1=arithExp; LE; e2=arithExp { Language.LessEq (e1,e2) }
+	| e1=arithExp; EQEQ; e2=arithExp { Language.Eq (e1,e2) }
+	| e1=arithExp; NE; e2=arithExp { Language.NEq (e1,e2) }	

@@ -68,6 +68,8 @@ rule read =
   | '*'      { TIMES_INT }
   | '/'      { DIVIDE_INT }
   | '&'      { AND }
+  | "&&"     { ANDAND }
+  | "||"     { OROR } 
   | '|'      { OR }
   | '!'      { NOT }
   | '>'      { GR }

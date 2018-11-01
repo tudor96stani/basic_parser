@@ -5,11 +5,12 @@
 %token VOID
 %token COLON COMMA SEMICOL DOT LEFT_BRACE RIGHT_BRACE LEFT_BRACK RIGHT_BRACK LEFT_RBRACK RIGHT_RBRACK
 %token EQUALS HASHTAG VVOID PLUS_FLOAT MINUS_FLOAT TIMES_FLOAT DIVIDE_FLOAT PLUS_INT MINUS_INT TIMES_INT DIVIDE_INT
-%token AND OR NOT GR LS GE LE EQEQ NE
+%token AND ANDAND OROR OR NOT GR LS GE LE EQEQ NE
 %token EOF
 
-%left PLUS_INT PLUS_FLOAT MINUS_INT MINUS_FLOAT
-%left TIMES_INT TIMES_FLOAT DIVIDE_INT DIVIDE_FLOAT
+%left PLUS_INT PLUS_FLOAT MINUS_INT MINUS_FLOAT OROR
+%left TIMES_INT TIMES_FLOAT DIVIDE_INT DIVIDE_FLOAT ANDAND
+%nonassoc NOT GR LS GE LE EQEQ NE
 
 %start <Language.progr option> start
 %%
@@ -97,4 +98,12 @@ arithExp:
 	| e1=arithExp; TIMES_FLOAT; e2=arithExp { Language.MulFlt (e1,e2) }
 	| e1=arithExp; DIVIDE_INT; e2=arithExp { Language.DivInt (e1,e2) }
 	| e1=arithExp; DIVIDE_FLOAT; e2=arithExp { Language.DivFlt (e1,e2) }
-	
+	| e1=arithExp; ANDAND; e2=arithExp {Language.LglAnd (e1,e2) }
+	| e1=arithExp; OROR; e2=arithExp {Language.LglOr (e1,e2) }
+	| NOT; e=arithExp { Language.LglNeg (e) }
+	| e1=arithExp; GR; e2=arithExp { Language.Gr (e1,e2) }
+	| e1=arithExp; LS; e2=arithExp { Language.Less (e1,e2) }
+	| e1=arithExp; GE; e2=arithExp { Language.GrEq (e1,e2) }
+	| e1=arithExp; LE; e2=arithExp { Language.LessEq (e1,e2) }
+	| e1=arithExp; EQEQ; e2=arithExp { Language.Eq (e1,e2) }
+	| e1=arithExp; NE; e2=arithExp { Language.NEq (e1,e2) }	
