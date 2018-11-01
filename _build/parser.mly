@@ -50,24 +50,24 @@ param_list: pr=prm; pl1=param_list1 { pr@pl1 }
 param_list1: | { [] }
              | COMMA; pl=param_list { pl }
 prm: t=typ; pn=ID { [Language.Fprm (t,pn)]}
-exp: 
+exp:(* 
   | NULL{ Language.Value (Language.Vnull) }
   | TRUE { Language.Value (Language.Bool (true))}
   | FALSE { Language.Value (Language.Bool (false))}
   | VOID { Language.Value (Language.Vvoid) }
+
   | obj=ID; DOT; fld=ID {Language.Vfld (obj,fld) }
-  | vname=ID; EQUALS; e=exp; SEMICOL { Language.AsgnV (vname,e) }
-  | obj=ID; DOT; fld=ID; EQUALS; e=exp; SEMICOL  { Language.AsgnF (obj,fld,e) }
-  | e1=exp; e2=exp  { Language.Seq (e1,e2) }
+*)| vname=ID; EQUALS; e=arithExp { Language.AsgnV (vname,e) }
+  | obj=ID; DOT; fld=ID; EQUALS; e=arithExp  { Language.AsgnF (obj,fld,e) }
+  | e1=exp;SEMICOL; e2=exp; SEMICOL  { Language.Seq (e1,e2) }
   | IF; vname=ID; THEN; LEFT_BRACE; then_exp=blkExp; RIGHT_BRACE; ELSE LEFT_BRACE; else_exp=blkExp; RIGHT_BRACE
     { Language.If (vname,then_exp,else_exp) }
-  | NEW; cn=ID; LEFT_RBRACK; v=vlist; RIGHT_RBRACK; SEMICOL  { Language.NewObj (cn,v) }
-  | obj=ID; DOT; mname=ID; LEFT_RBRACK; v=meth_inv_params; RIGHT_RBRACK; SEMICOL { Language.MethInv (obj,mname,v) }
+  | NEW; cn=ID; LEFT_RBRACK; v=vlist; RIGHT_RBRACK { Language.NewObj (cn,v) }
+  | obj=ID; DOT; mname=ID; LEFT_RBRACK; v=meth_inv_params; RIGHT_RBRACK  { Language.MethInv (obj,mname,v) }
   | WHILE; v=ID; LEFT_BRACE; e=exp; RIGHT_BRACE { Language.WhileExp (v,e) }
-  | CAST; LEFT_RBRACK; cn=ID; RIGHT_RBRACK; v=ID  { Language.Cast (cn,v) }
-  | v=ID; INSTOF; cn=ID  { Language.InstOf (v,cn) }
-  | IF; v=ID; THEN; e1=blkExp; ELSE; e2=blkExp { Language.If (v,e1,e2) }
-  | ble=blkExp { Language.Blk (ble) } 
+  | CAST; LEFT_RBRACK; cn=ID; RIGHT_RBRACK; v=ID{ Language.Cast (cn,v) }
+  | v=ID; INSTOF; cn=ID { Language.InstOf (v,cn) }
+  | LET; ble=blkExp { Language.Blk (ble) } 
   (*| ia=intArithmExp { ia }
   | fa=floatArithmExp { fa } 
   | le=logExp { le }*)
@@ -84,8 +84,8 @@ paramVal:
        | vall=FLOAT; COMMA { Language.Value (Language.Float (vall)) } 
        | vname=ID; COMMA { Language.Var (vname) }
 
-blkExp: LEFT_BRACE; e=exp; RIGHT_BRACE; SEMICOL { Bnvar (e) }
-       | LET; LEFT_RBRACK; t=typ; COLON; vname=ID; RIGHT_RBRACK; LEFT_BRACE; e=exp; RIGHT_BRACE; SEMICOL { Bvar (t,vname,e) }
+blkExp: LEFT_BRACE; e=exp; RIGHT_BRACE { Language.Bnvar (e) }
+       | LEFT_RBRACK; t=typ; COLON; vname=ID; RIGHT_RBRACK; LEFT_BRACE; e=exp; RIGHT_BRACE  { Language.Bvar (t,vname,e) }
 (*Arithmetic operations on int 
 intArithmExp: t=intTerm; aex=intArithmExp1 
        {
@@ -167,7 +167,11 @@ arithExp:
 	| i=INT { Language.Value (Language.Int (i)) }
 	| f=FLOAT {Language.Value (Language.Float (f)) }
 	| vname=ID { Language.Var (vname) } 
-	(*| v=paramVal { v } *)
+	| NULL{ Language.Value (Language.Vnull) }
+  	| TRUE { Language.Value (Language.Bool (true))}
+  	| FALSE { Language.Value (Language.Bool (false))}
+  	| VOID { Language.Value (Language.Vvoid) }
+  	| obj=ID; DOT; fld=ID {Language.Vfld (obj,fld) }
 	| LEFT_RBRACK; e=arithExp; RIGHT_RBRACK { e }
 	| e1=arithExp; PLUS_INT; e2=arithExp { Language.AddInt (e1,e2) }
 	| e1=arithExp; PLUS_FLOAT; e2=arithExp { Language.AddFlt (e1,e2) }

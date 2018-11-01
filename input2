@@ -4,10 +4,12 @@ class A extends Object {
 	int m1(int a,int b) {
 		let (int:c)
 		{
-			a=(5+4)/(4+9*(2+c));
-			a.tostr([]);
-			c=(f1 *. 1.45 - 2.0)/7.0;
-			b
-		};
-	};
+			a = (5+7*2);
+			a.toString([]);;
+			c = a;
+			c=a;;
+			c.tostring([]);;
+		}
+	}
+
 }
