@@ -69,13 +69,13 @@ meth_inv_params:
         | LEFT_BRACK; RIGHT_BRACK { [] }
         | vl=vlist { vl } 
 vlist:
-  | {[]}
-  |vl=vlist; v=paramVal {[v]@vl}
+  | v=paramVal; {[v]}
+  | v=paramVal; COMMA; vl=vlist {[v]@vl}
 
 paramVal:
-       | vall=INT; COMMA { Language.Value (Language.Int (vall)) }
-       | vall=FLOAT; COMMA { Language.Value (Language.Float (vall)) } 
-       | vname=ID; COMMA { Language.Var (vname) }
+       | vall=INT { Language.Value (Language.Int (vall)) }
+       | vall=FLOAT { Language.Value (Language.Float (vall)) } 
+       | vname=ID { Language.Var (vname) }
 
 blkExp: LEFT_BRACE; e=exp; RIGHT_BRACE { Language.Bnvar (e) }
        | LEFT_RBRACK; t=typ; COLON; vname=ID; RIGHT_RBRACK; LEFT_BRACE; e=exp; RIGHT_BRACE  { Language.Bvar (t,vname,e) }
